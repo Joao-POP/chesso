@@ -1,9 +1,8 @@
-use crate::{position, square, standard_board, Board, Color, Piece, PieceType, Position, Square};
+use crate::{Color, PieceType, Position, Square};
 
 use std::{
     collections::HashMap,
-    hash::{DefaultHasher, Hash, Hasher},
-    iter,
+    hash::{Hash, Hasher},
     sync::LazyLock,
 };
 
@@ -429,7 +428,7 @@ impl From<char> for Token {
 
 impl Hash for Token {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        let _ = match self {
+        match self {
             Token::Terminator(t) => t.hash(state),
             Token::NonTerminator(nt) => (*nt as u32).hash(state),
         };
@@ -441,11 +440,11 @@ impl PartialEq for Token {
         match self {
             Token::Terminator(t) => match other {
                 Token::Terminator(other_t) => other_t == t,
-                _ => return false,
+                _ => false,
             },
             Token::NonTerminator(nt) => match other {
                 Token::NonTerminator(other_nt) => *other_nt as usize == *nt as usize,
-                _ => return false,
+                _ => false,
             },
         }
     }
@@ -496,7 +495,7 @@ impl SAN {
                             active_color_positions.push(position.clone());
                         }
                     }
-                    let target_square = subject_profile.target_square.clone();
+                    let target_square = subject_profile.target_square;
                     let subject = query(subject_profile, &active_color_positions)?;
                     Ok(Self {
                         operation: Operation::Move(subject.id, target_square.unwrap()),
@@ -536,7 +535,7 @@ pub fn query(subject_profile: Profile, positions: &Vec<Position>) -> SANResult<P
         return Err(SANError::QueryError);
     }
 
-    if targets.iter().count() > 1 {
+    if targets.len() > 1 {
         return Err(SANError::QueryError);
     }
 
@@ -904,8 +903,8 @@ pub fn parse(san_string: &str) -> SANResult<(Vec<usize>, NotationType)> {
     }
 
     let mut left_derivations = rules.clone();
-    let mut notation_type = NotationType::Move(MoveType::Castle);
-    let mut move_type = MoveType::Reloc(profile);
+    let notation_type = NotationType::Move(MoveType::Castle);
+    let move_type = MoveType::Reloc(profile);
 
     let deriv = left_derivations.pop();
 
@@ -926,11 +925,11 @@ pub fn parse(san_string: &str) -> SANResult<(Vec<usize>, NotationType)> {
 }
 
 fn to_number(c: char) -> u8 {
-    return (c as u8 - 96);
+    c as u8 - 96
 }
 
 fn to_number_r(c: char) -> u8 {
-    return (c as u8 - 48);
+    c as u8 - 48
 }
 
 #[cfg(test)]
@@ -1000,9 +999,7 @@ mod tests {
             match chess_move.operation {
                 Operation::Move(position_id, target_square) => {
                     dbg!(positions
-                        .iter()
-                        .filter(|p| p.id == position_id)
-                        .next()
+                        .iter().find(|p| p.id == position_id)
                         .expect("Expected valid position id"));
                     assert_eq!(position_id, expected_position.id);
                 }

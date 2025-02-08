@@ -229,7 +229,7 @@ impl fmt::Display for Board {
                         }
 
                         if file % 8 == 0 {
-                            write!(f, "\n");
+                            writeln!(f);
                         }
                     }
                 }
@@ -265,7 +265,7 @@ impl fmt::Display for Board {
                         }
 
                         if file % 8 == 0 {
-                            write!(f, "\n");
+                            writeln!(f);
                         }
                     }
                 }
@@ -377,9 +377,9 @@ struct Square {
 
 impl Square {
     fn build(file: u8, rank: u8) -> Result<Self, PositionError> {
-        if file > 8 || file < 1 {
+        if !(1..=8).contains(&file) {
             return Err(PositionError::FileOutOfBounds(file));
-        } else if rank > 8 || rank < 1 {
+        } else if !(1..=8).contains(&rank) {
             return Err(PositionError::RankOutOfBounds(rank));
         }
 

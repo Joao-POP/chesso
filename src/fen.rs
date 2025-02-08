@@ -1,4 +1,4 @@
-use crate::{position, Color, Piece, PieceType, Position, PositionError, Square};
+use crate::{Color, Piece, PieceType, Position, PositionError, Square};
 
 pub use std::cmp::Ordering;
 
@@ -201,16 +201,14 @@ mod tests {
             position!(7, 8, PieceType::Knight, Color::White),
         ];
 
-        let approx_positions = vec![
-            position!(3, 8, PieceType::Rook, Color::White),
+        let approx_positions = [position!(3, 8, PieceType::Rook, Color::White),
             position!(4, 3, PieceType::Bishop, Color::Black),
             position!(2, 5, PieceType::Pawn, Color::Black),
             position!(6, 5, PieceType::Pawn, Color::Black),
             position!(7, 5, PieceType::Pawn, Color::Black),
             position!(8, 6, PieceType::Queen, Color::Black),
             position!(1, 4, PieceType::Rook, Color::White),
-            position!(7, 8, PieceType::Knight, Color::Black),
-        ];
+            position!(7, 8, PieceType::Knight, Color::Black)];
 
         assert_eq!(
             closest_match(&approx_positions[0], &positions),
