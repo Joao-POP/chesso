@@ -1,4 +1,4 @@
-use crate::{Color, PieceType, Position, Square};
+use crate::{Color, PieceType, Position, Square}; 
 
 use std::{
     collections::HashMap,
@@ -306,11 +306,11 @@ static PARSE_TABLE: LazyLock<HashMap<Token, HashMap<char, usize>>> = LazyLock::n
             ]),
         ),
         (
-            Token::NonTerminator(NonTerminator::s),
+            Token::NonTerminator(NonTerminator::_S),
             HashMap::from([('-', 37), ('/', 37)]),
         ),
         (
-            Token::NonTerminator(NonTerminator::f),
+            Token::NonTerminator(NonTerminator::_F),
             HashMap::from([
                 ('a', 38),
                 ('b', 38),
@@ -323,7 +323,7 @@ static PARSE_TABLE: LazyLock<HashMap<Token, HashMap<char, usize>>> = LazyLock::n
             ]),
         ),
         (
-            Token::NonTerminator(NonTerminator::r),
+            Token::NonTerminator(NonTerminator::_R),
             HashMap::from([
                 ('1', 39),
                 ('2', 39),
@@ -336,7 +336,7 @@ static PARSE_TABLE: LazyLock<HashMap<Token, HashMap<char, usize>>> = LazyLock::n
             ]),
         ),
         (
-            Token::NonTerminator(NonTerminator::b),
+            Token::NonTerminator(NonTerminator::_B),
             HashMap::from([('O', 40), ('0', 40)]),
         ),
     ])
@@ -393,19 +393,10 @@ enum NonTerminator {
     X3,
     R1,
     R2,
-    f,
-    r,
-    omega,
-    phi,
-    b,
-    s,
-    z,
-    c,
-    x,
-    p,
-    tau,
-    kappa,
-    gamma,
+    _F,
+    _R,
+    _B,
+    _S,
 }
 
 #[derive(Eq, Debug)]
@@ -463,7 +454,7 @@ pub enum MoveType {
 }
 
 #[derive(Debug)]
-struct Profile {
+pub struct Profile {
     ty: PieceType,
     file_disambiguation: Option<u8>,
     rank_disambiguation: Option<u8>,
@@ -542,7 +533,7 @@ pub fn query(subject_profile: Profile, positions: &Vec<Position>) -> SANResult<P
     Ok(targets[0].clone())
 }
 
-pub fn is_reachable(subject_profile: &Profile, position: &Position) -> bool {
+fn is_reachable(subject_profile: &Profile, position: &Position) -> bool {
     let target_square = subject_profile.target_square.unwrap();
 
     match subject_profile.ty {
@@ -614,7 +605,7 @@ pub fn is_reachable(subject_profile: &Profile, position: &Position) -> bool {
     }
 }
 
-pub fn is_castleable(active_color: Color, positions: &Vec<Position>) -> bool {
+pub(crate) fn is_castleable(_active_color: Color, _positions: &[Position]) -> bool {
     true
 }
 
@@ -790,8 +781,8 @@ pub fn parse(san_string: &str) -> SANResult<(Vec<usize>, NotationType)> {
                             'a'..='h' => stack.push(NonTerminator::Pi.into()),
                             '1'..='8' => {
                                 stack.push(Token::Terminator('#'));
-                                stack.push(NonTerminator::r.into());
-                                stack.push(NonTerminator::f.into());
+                                stack.push(NonTerminator::_R.into());
+                                stack.push(NonTerminator::_F.into());
                             }
                             _ => return Err(SANError::UnrecognizedSymbol),
                         },
@@ -887,23 +878,20 @@ pub fn parse(san_string: &str) -> SANResult<(Vec<usize>, NotationType)> {
             }
             _ => {
                 match *top {
-                    Token::NonTerminator(nt) => match nt {
-                        NonTerminator::Lambda
-                        | NonTerminator::R2
-                        | NonTerminator::X3
-                        | NonTerminator::F1
-                        | NonTerminator::B2
-                        | NonTerminator::R => break,
+                    Token::NonTerminator(NonTerminator::Lambda)
+                        | Token::NonTerminator(NonTerminator::R2)
+                        | Token::NonTerminator(NonTerminator::X3)
+                        | Token::NonTerminator(NonTerminator::F1)
+                        | Token::NonTerminator(NonTerminator::B2)
+                        | Token::NonTerminator(NonTerminator::R) => break,
                         _ => return Err(SANError::IncompleteNotation),
-                },
-                _ => return Err(SANError::IncompleteNotation),
                 }
             },
         }
     }
 
     let mut left_derivations = rules.clone();
-    let notation_type = NotationType::Move(MoveType::Castle);
+    let _notation_type = NotationType::Move(MoveType::Castle);
     let move_type = MoveType::Reloc(profile);
 
     let deriv = left_derivations.pop();
@@ -935,6 +923,8 @@ fn to_number_r(c: char) -> u8 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::iter;
+    use crate::{position, Piece};
 
     #[test]
     fn parse_known_valid_moves() {

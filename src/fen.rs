@@ -1,4 +1,4 @@
-use crate::{Color, Piece, PieceType, Position, PositionError, Square};
+use crate::{Color, Piece, PieceType, Position, PositionError, Square, };
 
 pub use std::cmp::Ordering;
 
@@ -27,7 +27,7 @@ impl From<PositionError> for FENError {
 
 #[derive(Debug)]
 #[allow(unused)]
-enum FENField {
+pub enum FENField {
     PiecePlacement,
     ActiveColor,
     CastlingAvailability,
@@ -157,6 +157,7 @@ impl<'a> FENData<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::position;
 
     fn closest_match(query: &Position, list: &Vec<Position>) -> Position {
         let mut matches = vec![];

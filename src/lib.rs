@@ -134,7 +134,7 @@ impl TryFrom<char> for PieceType {
             'R' => Ok(PieceType::Rook),
             'B' => Ok(PieceType::Bishop),
             'N' => Ok(PieceType::Knight),
-            other => Err(SANError::InvalidPieceIdentifier),
+            _ => Err(SANError::InvalidPieceIdentifier),
         }
     }
 }
@@ -299,7 +299,7 @@ impl fmt::Display for Board {
 ///
 /// Is guaranteed to be inside bounds thanks to `crate::Square`.
 #[derive(Debug, Clone)]
-struct Position {
+pub struct Position {
     square: Square,
     piece: Piece,
     id: usize,
@@ -324,7 +324,7 @@ impl PartialEq for Position {
 /// May be any of the standard pieces (Knight, Rook, Queen, King, Pawn, Bishop),
 /// and a color.
 #[derive(Debug, Clone)]
-struct Piece {
+pub struct Piece {
     color: Color,
     ty: PieceType,
 }
@@ -370,7 +370,7 @@ impl fmt::Display for Piece {
 ///
 /// Use this if you need to represent any kind of location with just numbers.
 #[derive(PartialEq, Debug, Copy, Clone)]
-struct Square {
+pub struct Square {
     file: u8,
     rank: u8,
 }
