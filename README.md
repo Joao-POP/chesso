@@ -10,5 +10,9 @@ Chesso é um cliente de xadrez virtual que mal funciona.
 
 ## Lista de tarefas
 
-- [x] Lógica de jogo.
-- [x] Carregamento de partidas no disco.
+- [ ] Lógica de jogo.
+- [ ] Carregamento de partidas no disco.
+
+# Atenção
+
+Esse repositório é muito complexo para ser consertado.
